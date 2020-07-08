@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Detect Faces Sample</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+ 
+  </head>
+  <body>
+    <script type="text/javascript">
+      function processImage() {
+        // Replace <Subscription Key> with your valid subscription key.
+        var subscriptionKey = 'YOUR_KEY'
+
+        // NOTE: You must use the same region in your REST call as you used to
+        // obtain your subscription keys. 
+        // Free trial subscription keys are generated in the "westus" region.
+        // If you use a free trial subscription key, you shouldn't need to change
+        // this region.
+        var uriBase =
+          'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect'
+
+        var params = {
+          returnFaceId: 'true',
+          returnFaceLandmarks: 'false',
+          returnFaceAttributes:
+            'age,gender,headPose,smile,facialHair,glasses,emotion,' +
+            'hair,makeup,occlusion,accessories,blur,exposure,noise',
+        }
+
+        var sourceImageUrl = document.getElementById('inputImage').value
+        document.querySelector('#sourceImage').src = sourceImageUrl
+
+        $.ajax({
+          url: uriBase + '?' + $.param(params),
+
+          beforeSend: function (xhrObj) {
+            xhrObj.setRequestHeader('Content-Type', 'application/json')
+            xhrObj.setRequestHeader(
+              'Ocp-Apim-Subscription-Key',
+              subscriptionKey
+            )
+          },
+          type: 'POST',
+          data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        })
+
+          .done(function (data) {
+            // Show formatted JSON on webpage.
+            $('#responseTextArea').val(JSON.stringify(data, null, 2))
+          })
+
+          .fail(function (jqXHR, textStatus, errorThrown) {
+            // Display error message.
+            var errorString =
+              errorThrown === ''
+                ? 'Error. '
+                : errorThrown + ' (' + jqXHR.status + '): '
+            errorString +=
+              jqXHR.responseText === ''
+                ? ''
+                : jQuery.parseJSON(jqXHR.responseText).message
+                ? jQuery.parseJSON(jqXHR.responseText).message
+                : jQuery.parseJSON(jqXHR.responseText).error.message
+            alert(errorString)
+          })
+      }
+    </script>
+    <h1>Detect Faces</h1>
+    <div class="container">
+      <p>
+        Enter the URL to an image that includes a face or faces to analyze:
+      </p>
+      <input
+        type="text"
+        name="inputImage"
+        id="inputImage"
+        value="https://static3.leonoticias.com/www/multimedia/202003/17/media/cortadas/Potter-kgqD-U1005697036547b-1248x770@Leonoticias.jpg"
+      />
+      <button onclick="processImage()">Analyze face</button><br /><br />
+      <div id="wrapper">
+        <div id="imageDiv">
+          <img id="sourceImage" />
+        </div>
+        <div id="jsonOutput" >
+          <textarea
+            id="responseTextArea"
+            class="UIInput"
+            style="width: 580px; height: 400px;"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+    <style>
+      body,
+      html {
+        background: rgba(134, 252, 226, 0.137);
+      }
+      h1,
+      p {
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 5rem;
+      }
+
+      p {
+        font-size: 1.5rem;
+      }
+      input {
+        width: 70%;
+        font-size: 1.2rem;
+        padding: 8px;
+        border: 1px solid rgb(3, 138, 120);
+        border-radius: 8px;
+      }
+      button {
+        width: 30%;
+        font-size: 1.6rem;
+        padding: 8px;
+        color: white;
+        background: rgb(3, 138, 120);
+        border: 1px solid rgb(3, 138, 120);
+        margin: 30px;
+        border-radius: 8px;
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        width: 50%;
+        margin: auto;
+      }
+      #jsonOutput {
+        font-size: 1.6rem;
+        padding: 8px;
+        color: white;
+        background: rgb(3, 138, 120);
+        border: none;
+        margin: 30px;
+        border-radius: 8px;
+      }
+
+      #imageDiv {
+        font-size: 1.6rem;
+        padding: 8px;
+        color: white;
+        background: rgb(3, 138, 120);
+        border: none;
+        margin: 30px;
+        border-radius: 8px;
+width: 600px;
+        
+      }
+
+      img {
+          border: 1px solid rgb(3, 201, 174);
+          height: 409px;
+          width: 99%;
+        }
+
+        #wrapper{
+            display: flex;
+        }
+    </style>
+  </body>
+</html>
